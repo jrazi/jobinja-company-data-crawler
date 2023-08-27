@@ -12,8 +12,7 @@ class JobinjaSpider(scrapy.Spider):
     name = 'jobinja'
     crawled_count = 0
     companies_df = pd.read_csv('jobinja_company_url.csv')
-    companies_full_info = pd.DataFrame([], columns=['Company Name (EN)', 'Company Name (FA)', 'Company URL', 'Lower Employee Count', 'Upper Employee Count', 'Business Area', 'Founded Year'])
-
+    
     start_urls = companies_df['company_url'].to_list()
     def parse(self, response):
         
@@ -51,8 +50,16 @@ class JobinjaSpider(scrapy.Spider):
         # Log extracted information
         self.log(f"Company Name: {company_name_en}, Employee Range: {lower_emp}-{upper_emp}, Business Area: {business_area}, Founded Year: {founded_year}", logging.INFO)
 
-        self.companies_full_info = pd.concat([self.companies_full_info, pd.DataFrame([[company_name_en, company_name_fa, company_url, lower_emp, upper_emp, business_area, founded_year]], columns=self.companies_full_info.columns)], ignore_index=True, axis=0)
-        self.companies_full_info.to_csv("./jobinja_company_data.csv", encoding='utf-8', header=True)
+        # Block: Saving the extracted information
+        yield {
+            'Company Name (EN)': company_name_en,
+            'Company Name (FA)': company_name_fa,
+            'Company URL': company_url,
+            'Lower Employee Count': lower_emp,
+            'Upper Employee Count': upper_emp,
+            'Business Area': business_area,
+            'Founded Year': founded_year
+        }
 
         self.crawled_count += 1
         
