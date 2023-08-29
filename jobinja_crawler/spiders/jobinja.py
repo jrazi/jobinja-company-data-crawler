@@ -32,6 +32,8 @@ class JobinjaSpider(scrapy.Spider):
         # Fetching the business area
         business_area = meta_section.css('.c-companyHeader__metaLink::text').get().strip()
 
+        website = meta_section.css('.c-companyHeader__metaLink::attr(href)')[1].get().strip()
+
         # Fetching the employee range
         emp_range = meta_section.css('.c-companyHeader__metaItem:nth-child(3)::text').get().strip()
         emp_range_digits = re.findall(r'\d+', emp_range)
@@ -54,6 +56,7 @@ class JobinjaSpider(scrapy.Spider):
         yield {
             'Company Name (EN)': company_name_en,
             'Company Name (FA)': company_name_fa,
+            'Website': website,
             'Company URL': company_url,
             'Lower Employee Count': lower_emp,
             'Upper Employee Count': upper_emp,
